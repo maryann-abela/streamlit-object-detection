@@ -1,6 +1,6 @@
 streamlit
 opencv-python
 ultralytics
-streamlit-webrtc
+streamlit-webrtc==0.47.0
 av
 tornado
