@@ -2,8 +2,8 @@ import os
 os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer
-import cv2
-print(cv2.__version__)
+from PIL import Image
+import numpy as np
 from ultralytics import YOLO
 import av
 import cv2
