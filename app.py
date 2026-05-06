@@ -1,3 +1,9 @@
+import asyncio
+
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 import os
 os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
 import streamlit as st
