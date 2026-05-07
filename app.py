@@ -28,7 +28,7 @@ if img_file:
     img = np.array(image)
 
     # 🚨 IMPORTANT: disable OpenCV pipeline
-    results = model.predict(source=img, save=False, verbose=False)
+    results = model.predict(source=img, save=False, verbose=False, device='cpu')
 
     result_img = results[0].plot()
 
