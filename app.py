@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer
 from ultralytics import YOLO
 import av
-import cv2
+import cv2 as cv
 
 # Cache the model so it doesn't reload every rerun
 @st.cache_resource
@@ -16,7 +16,7 @@ st.write("Point your camera at objects to identify them in real-time.")
 
 # Video frame callback
 def video_frame_callback(frame):
-    img = frame.to_ndarray(format="bgr24")
+   img = frame.to_ndarray(format="bgr24").copy()
 
     # Run YOLOv8 tracking
     results = model.track(
