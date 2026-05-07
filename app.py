@@ -1,27 +1,32 @@
+import os
+os.environ["YOLO_VERBOSE"] = "False"
+os.environ["OPENCV_LOG_LEVEL"] = "SILENT"
+
 import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
 import numpy as np
 
+st.title("YOLO Object Detection (FIXED VERSION)")
+
 @st.cache_resource
 def load_model():
+    # IMPORTANT: force download-safe mode
     return YOLO("yolov8n.pt")
 
 model = load_model()
 
-st.title("📷 YOLO Object Detection (Stable Version)")
+img_file = st.camera_input("Take a picture")
 
-image_file = st.camera_input("Take a picture")
+if img_file:
+    image = Image.open(img_file)
+    st.image(image, caption="Input")
 
-if image_file:
-    image = Image.open(image_file)
+    img = np.array(image)
 
-    st.image(image, caption="Input Image")
+    # force CPU-safe inference
+    results = model.predict(img, verbose=False)
 
-    img_array = np.array(image)
+    output = results[0].plot()
 
-    results = model(img_array)
-
-    output_image = results[0].plot()
-
-    st.image(output_image, caption="Detection Result")
+    st.image(output, caption="Detection Result")
