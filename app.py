@@ -5,28 +5,23 @@ import numpy as np
 
 @st.cache_resource
 def load_model():
-    # Auto-download official YOLO model
-    return YOLO("yolov8n.pt")
+    return YOLO("yolov8n.pt", task="detect")
 
 model = load_model()
 
 st.title("📷 Object Detection App")
 
-picture = st.camera_input("Take a picture")
+image_file = st.camera_input("Take a picture")
 
-if picture:
-    image = Image.open(picture)
+if image_file:
+    image = Image.open(image_file)
 
-    st.image(image, caption="Captured Image")
+    st.image(image)
 
-    img_array = np.array(image)
+    img = np.array(image)
 
-    results = model(img_array)
+    results = model(img)
 
-    annotated_frame = results[0].plot()
+    output = results[0].plot()
 
-    st.image(
-        annotated_frame,
-        caption="Detected Objects",
-        use_column_width=True
-    )
+    st.image(output)
