@@ -9,12 +9,12 @@ Features:
 * Uses webcam
 
 Technologies Used:
-* Python
-* Streamlit
-* streamlit-webrtc
-* YOLOv8 (Ultralytics)
-* OpenCV
-* AV 
+*ultralytics
+*opencv-python-headless
+*streamlit
+*pillow
+*numpy
+
 
 Run the app:
 python -m streamlit run app.py
