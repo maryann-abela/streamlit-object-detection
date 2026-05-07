@@ -5,23 +5,23 @@ import numpy as np
 
 @st.cache_resource
 def load_model():
-    return YOLO("yolov8n.pt", task="detect")
+    return YOLO("yolov8n.pt")
 
 model = load_model()
 
-st.title("📷 Object Detection App")
+st.title("📷 YOLO Object Detection (Stable Version)")
 
 image_file = st.camera_input("Take a picture")
 
 if image_file:
     image = Image.open(image_file)
 
-    st.image(image)
+    st.image(image, caption="Input Image")
 
-    img = np.array(image)
+    img_array = np.array(image)
 
-    results = model(img)
+    results = model(img_array)
 
-    output = results[0].plot()
+    output_image = results[0].plot()
 
-    st.image(output)
+    st.image(output_image, caption="Detection Result")
