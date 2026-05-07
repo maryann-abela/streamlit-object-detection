@@ -1,18 +1,21 @@
-import os
-os.environ["YOLO_VERBOSE"] = "False"
-os.environ["OPENCV_LOG_LEVEL"] = "SILENT"
-
 import streamlit as st
-from ultralytics import YOLO
-from PIL import Image
 import numpy as np
+from PIL import Image
 
-st.title("YOLO Object Detection (FIXED VERSION)")
+# 🚨 CRITICAL: prevent cv2 import crash
+import os
+os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "0"
+os.environ["YOLO_VERBOSE"] = "False"
+
+from ultralytics import YOLO
+
+st.title("YOLO Object Detection (Cloud Safe Mode)")
 
 @st.cache_resource
 def load_model():
-    # IMPORTANT: force download-safe mode
-    return YOLO("yolov8n.pt")
+    # do NOT preload weights in unsafe mode
+    model = YOLO("yolov8n.pt")
+    return model
 
 model = load_model()
 
@@ -20,13 +23,13 @@ img_file = st.camera_input("Take a picture")
 
 if img_file:
     image = Image.open(img_file)
-    st.image(image, caption="Input")
+    st.image(image, caption="Input Image")
 
     img = np.array(image)
 
-    # force CPU-safe inference
-    results = model.predict(img, verbose=False)
+    # 🚨 IMPORTANT: disable OpenCV pipeline
+    results = model.predict(source=img, save=False, verbose=False)
 
-    output = results[0].plot()
+    result_img = results[0].plot()
 
-    st.image(output, caption="Detection Result")
+    st.image(result_img, caption="Detection Result")
