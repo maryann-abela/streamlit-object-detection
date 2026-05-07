@@ -1,29 +1,44 @@
 import streamlit as st
+from streamlit_webrtc import webrtc_streamer
 from ultralytics import YOLO
-from PIL import Image
-import numpy as np
+import av
+import cv2
 
-st.title("YOLO Object Detection")
+# Cache the model so it doesn't reload every rerun
+@st.cache_resource
+def load_model():
+    return YOLO("yolov8n.pt")
 
-model = YOLO("yolov8n.pt")
+model = load_model()
 
-uploaded_file = st.file_uploader(
-    "Upload an image",
-    type=["jpg", "jpeg", "png"]
-)
+st.title("🎥 Live Object Detection & Tracing")
+st.write("Point your camera at objects to identify them in real-time.")
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
+# Video frame callback
+def video_frame_callback(frame):
+    img = frame.to_ndarray(format="bgr24")
 
-    st.image(image, caption="Uploaded Image")
+    # Run YOLOv8 tracking
+    results = model.track(
+        img,
+        persist=True,
+        conf=0.5,
+        verbose=False
+    )
 
-    img_array = np.array(image)
-
-    results = model(img_array)
-
+    # Annotate frame
     annotated_frame = results[0].plot()
 
-    st.image(
-        annotated_frame,
-        caption="Detected Objects"
-    )
+    return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
+
+
+# Start WebRTC streamer
+webrtc_streamer(
+    key="object-detection",
+    video_frame_callback=video_frame_callback,
+    async_processing=True,  # smoother performance
+    rtc_configuration={
+        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+    },
+    media_stream_constraints={"video": True, "audio": False},
+)
