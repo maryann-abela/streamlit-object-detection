@@ -3,17 +3,15 @@ from ultralytics import YOLO
 from PIL import Image
 import numpy as np
 
-# Load YOLO model
 @st.cache_resource
 def load_model():
+    # Auto-download official YOLO model
     return YOLO("yolov8n.pt")
 
 model = load_model()
 
-st.title("📷 Live Object Detection")
-st.write("Take a photo using your webcam for object detection.")
+st.title("📷 Object Detection App")
 
-# Open webcam
 picture = st.camera_input("Take a picture")
 
 if picture:
@@ -23,10 +21,8 @@ if picture:
 
     img_array = np.array(image)
 
-    # Run YOLO detection
     results = model(img_array)
 
-    # Draw detections
     annotated_frame = results[0].plot()
 
     st.image(
